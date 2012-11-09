@@ -1,0 +1,1090 @@
+diff --git a/include/mruby/value.h b/include/mruby/value.h
+index 90c011a..2218806 100644
+--- a/include/mruby/value.h
++++ b/include/mruby/value.h
+@@ -7,6 +7,10 @@
+ #ifndef MRUBY_VALUE_H
+ #define MRUBY_VALUE_H
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifndef MRB_NAN_BOXING
+ 
+ enum mrb_vtype {
+@@ -264,4 +268,8 @@ mrb_undef_value(void)
+   return v;
+ }
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
+ #endif  /* MRUBY_OBJECT_H */
+diff --git a/mrblib/init_mrblib.c b/mrblib/init_mrblib.c
+index 72355e3..5af7d6b 100644
+--- a/mrblib/init_mrblib.c
++++ b/mrblib/init_mrblib.c
+@@ -4,6 +4,10 @@
+ #include "mruby/string.h"
+ #include "mruby/proc.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ extern const char mrblib_irep[];
+ 
+ void
+@@ -14,3 +18,6 @@ mrb_init_mrblib(mrb_state *mrb)
+   mrb_run(mrb, mrb_proc_new(mrb, mrb->irep[n]), mrb_top_self(mrb));
+ }
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/array.c b/src/array.c
+index a200de3..9abbf72 100644
+--- a/src/array.c
++++ b/src/array.c
+@@ -16,6 +16,10 @@
+ #  define ARY_MAX_SIZE (INT_MAX / sizeof(mrb_value))
+ #endif
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static inline mrb_value
+ ary_elt(mrb_value ary, int offset)
+ {
+@@ -1163,3 +1167,7 @@ mrb_init_array(mrb_state *mrb)
+   mrb_define_method(mrb, a, "eql?",            mrb_ary_eql,          ARGS_REQ(1)); /* 15.2.12.5.34 (x) */
+   mrb_define_method(mrb, a, "<=>",             mrb_ary_cmp,          ARGS_REQ(1)); /* 15.2.12.5.36 (x) */
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/cdump.c b/src/cdump.c
+index b43c86e..d188205 100644
+--- a/src/cdump.c
++++ b/src/cdump.c
+@@ -16,6 +16,10 @@
+ #define SOURCE_CODE(fmt, ...)  fprintf(f, fmt"\n", __VA_ARGS__)
+ #define SOURCE_CODE0(str)      do {fputs(str, f); putc('\n', f);} while (0)
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static int
+ make_cdump_isec(mrb_state *mrb, int irep_no, FILE *f)
+ {
+@@ -210,3 +214,7 @@ mrb_cdump_irep(mrb_state *mrb, int n, FILE *f,const char *initname)
+ 
+   return 0;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/class.c b/src/class.c
+index cf2f6df..0772ae8 100644
+--- a/src/class.c
++++ b/src/class.c
+@@ -15,6 +15,10 @@
+ #include "mruby/array.h"
+ #include "error.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ KHASH_DEFINE(mt, mrb_sym, struct RProc*, 1, kh_int_hash_func, kh_int_hash_equal);
+ 
+ typedef struct fc_result {
+@@ -1445,3 +1449,7 @@ mrb_init_class(mrb_state *mrb)
+   mrb_undef_method(mrb, cls, "append_features");
+   mrb_undef_method(mrb, cls, "extend_object");
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/codegen.c b/src/codegen.c
+index f37a9e3..c2f0d0e 100644
+--- a/src/codegen.c
++++ b/src/codegen.c
+@@ -18,6 +18,10 @@
+ #include <stdlib.h>
+ #include <ctype.h>
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ typedef mrb_ast_node node;
+ typedef struct mrb_parser_state parser_state;
+ 
+@@ -2587,3 +2591,7 @@ p(fib(30), \"\\n\")\n\
+   return 0;
+ }
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/compar.c b/src/compar.c
+index 1614d23..c8be1db 100644
+--- a/src/compar.c
++++ b/src/compar.c
+@@ -6,8 +6,16 @@
+ 
+ #include "mruby.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ void
+ mrb_init_comparable(mrb_state *mrb)
+ {
+   mrb_define_module(mrb, "Comparable");
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/crc.c b/src/crc.c
+index 0451c36..2d0452c 100644
+--- a/src/crc.c
++++ b/src/crc.c
+@@ -15,6 +15,10 @@
+ #define  CRC_XOR_PATTERN    (CRC_16_CCITT << 8)
+ #define  CRC_CARRY_BIT      (1 << 24)
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ uint16_t
+ calc_crc_16_ccitt(unsigned char *src, int nbytes)
+ {
+@@ -32,3 +36,7 @@ calc_crc_16_ccitt(unsigned char *src, int nbytes)
+   }
+   return (uint16_t)(crcwk >> 8);
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/dump.c b/src/dump.c
+index 241c97a..3a74779 100644
+--- a/src/dump.c
++++ b/src/dump.c
+@@ -14,6 +14,10 @@
+ #endif
+ #include "mruby/irep.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static const unsigned char def_rite_binary_header[] =
+   RITE_FILE_IDENFIFIER
+   RITE_FILE_FORMAT_VER
+@@ -722,3 +726,7 @@ mrb_bdump_irep(mrb_state *mrb, int n, FILE *f,const char *initname)
+ 
+   return rc;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/enum.c b/src/enum.c
+index 0a58cc5..6c93b0a 100644
+--- a/src/enum.c
++++ b/src/enum.c
+@@ -6,9 +6,16 @@
+ 
+ #include "mruby.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ void
+ mrb_init_enumerable(mrb_state *mrb)
+ {
+   mrb_define_module(mrb, "Enumerable");
+ }
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/error.c b/src/error.c
+index 430728d..f816b16 100644
+--- a/src/error.c
++++ b/src/error.c
+@@ -18,6 +18,10 @@
+ 
+ #define warn_printf printf
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ mrb_value
+ mrb_exc_new(mrb_state *mrb, struct RClass *c, const char *ptr, long len)
+ {
+@@ -424,3 +428,7 @@ mrb_init_exception(mrb_state *mrb)
+   e = mrb_define_class(mrb, "ScriptError",  mrb->eException_class);                                    /* 15.2.37 */
+   mrb_define_class(mrb, "SyntaxError",  e);                                                            /* 15.2.38 */
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/error.h b/src/error.h
+index 674d4f4..2facf48 100644
+--- a/src/error.h
++++ b/src/error.h
+@@ -7,6 +7,10 @@
+ #ifndef MRUBY_ERROR_H
+ #define MRUBY_ERROR_H
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ struct RException {
+   MRB_OBJECT_HEADER;
+ };
+@@ -21,4 +25,8 @@ mrb_value mrb_sprintf(mrb_state *mrb, const char *fmt, ...);
+ void mrb_name_error(mrb_state *mrb, mrb_sym id, const char *fmt, ...);
+ void mrb_exc_print(mrb_state *mrb, struct RObject *exc);
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
+ #endif  /* MRUBY_ERROR_H */
+diff --git a/src/etc.c b/src/etc.c
+index 4542c4a..8bd955f 100644
+--- a/src/etc.c
++++ b/src/etc.c
+@@ -10,6 +10,10 @@
+ #include "mruby/numeric.h"
+ #include "mruby/data.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ struct RData*
+ mrb_data_object_alloc(mrb_state *mrb, struct RClass *klass, void *ptr, const struct mrb_data_type *type)
+ {
+@@ -182,3 +186,6 @@ mrb_obj_id(mrb_value obj)
+   }
+ }
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/gc.c b/src/gc.c
+index 3ee5da1..4fb8fd9 100644
+--- a/src/gc.c
++++ b/src/gc.c
+@@ -20,6 +20,10 @@
+ #include <limits.h> // for SIZE_MAX
+ #endif
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ /*
+   = Tri-color Incremental Garbage Collection
+ 
+@@ -1360,3 +1364,7 @@ main(void)
+ }
+ #endif
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/hash.c b/src/hash.c
+index 229e61d..4d04d7c 100644
+--- a/src/hash.c
++++ b/src/hash.c
+@@ -12,6 +12,10 @@
+ #include "mruby/string.h"
+ #include "mruby/variable.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static inline khint_t
+ mrb_hash_ht_hash_func(mrb_state *mrb, mrb_value key)
+ {
+@@ -1367,3 +1371,7 @@ mrb_init_hash(mrb_state *mrb)
+   mrb_define_alias(mrb,  h, "to_s",            "inspect");                         /* 15.2.13.4.31 (x)*/
+   mrb_define_method(mrb, h, "eql?",            mrb_hash_eql,         ARGS_REQ(1)); /* 15.2.13.4.32 (x)*/
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/init.c b/src/init.c
+index 52fd9e1..ded87aa 100644
+--- a/src/init.c
++++ b/src/init.c
+@@ -6,6 +6,10 @@
+ 
+ #include "mruby.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ void mrb_init_symtbl(mrb_state*);
+ void mrb_init_class(mrb_state*);
+ void mrb_init_object(mrb_state*);
+@@ -69,3 +73,7 @@ mrb_init_core(mrb_state *mrb)
+ 
+   mrb_gc_arena_restore(mrb, 0);
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/init_ext.c b/src/init_ext.c
+index 96ee34d..6140e04 100644
+--- a/src/init_ext.c
++++ b/src/init_ext.c
+@@ -6,6 +6,10 @@
+ 
+ #include "mruby.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ void
+ mrb_init_ext(mrb_state *mrb)
+ {
+@@ -14,3 +18,7 @@ mrb_init_ext(mrb_state *mrb)
+   mrb_init_socket(mrb);
+ #endif
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/kernel.c b/src/kernel.c
+index ac3c10f..1b85874 100644
+--- a/src/kernel.c
++++ b/src/kernel.c
+@@ -12,6 +12,10 @@
+ #include "mruby/variable.h"
+ #include "error.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ typedef enum {
+     NOEX_PUBLIC    = 0x00,
+     NOEX_NOSUPER   = 0x01,
+@@ -1119,3 +1123,7 @@ mrb_init_kernel(mrb_state *mrb)
+   mrb_include_module(mrb, mrb->object_class, mrb->kernel_module);
+   mrb_alias_method(mrb, mrb->module_class, mrb_intern(mrb, "dup"), mrb_intern(mrb, "clone"));
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/load.c b/src/load.c
+index 142c6fd..dd1f72c 100644
+--- a/src/load.c
++++ b/src/load.c
+@@ -13,6 +13,10 @@
+ #endif
+ #include "mruby/irep.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ typedef struct _RiteFILE
+ {
+   FILE* fp;
+@@ -659,3 +663,7 @@ hex_to_str(char *hex, char *str, uint16_t *str_len)
+   }
+   return str;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/math.c b/src/math.c
+index 9aae87a..9f47309 100644
+--- a/src/math.c
++++ b/src/math.c
+@@ -7,6 +7,10 @@
+ #include "mruby.h"
+ #include "mruby/array.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_MATH
+ #include <math.h>
+ 
+@@ -684,4 +688,9 @@ mrb_init_math(mrb_state *mrb)
+   mrb_define_module_function(mrb, mrb_math, "erf",  math_erf,  ARGS_REQ(1));
+   mrb_define_module_function(mrb, mrb_math, "erfc", math_erfc, ARGS_REQ(1));
+ }
++
+ #endif	/* ENABLE_MATH */
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/name2ctype.h b/src/name2ctype.h
+index 0773bbf..bcca2a2 100644
+--- a/src/name2ctype.h
++++ b/src/name2ctype.h
+@@ -33,7 +33,9 @@
+ error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
+ #endif
+ 
+-
++#if defined(__cplusplus)
++extern "C" {
++#endif
+ 
+ #ifdef USE_UNICODE_PROPERTIES
+ #ifdef USE_UNICODE_PROPERTIES
+@@ -17979,3 +17981,7 @@ uniname2ctype(const UChar *name, unsigned int len)
+   if (p) return p->ctype;
+   return -1;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/numeric.c b/src/numeric.c
+index 5625623..5b601d1 100644
+--- a/src/numeric.c
++++ b/src/numeric.c
+@@ -34,6 +34,10 @@
+ #define fmod(x,y) fmodf(x,y)
+ #endif
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static mrb_float
+ mrb_to_flo(mrb_state *mrb, mrb_value val)
+ {
+@@ -1341,3 +1345,7 @@ mrb_init_numeric(mrb_state *mrb)
+   mrb_define_method(mrb, fl,      "to_s",      flo_to_s,         ARGS_NONE()); /* 15.2.9.3.16(x) */
+   mrb_define_method(mrb, fl,      "inspect",   flo_to_s,         ARGS_NONE());
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/object.c b/src/object.c
+index 51b5c12..9aa1f57 100644
+--- a/src/object.c
++++ b/src/object.c
+@@ -11,6 +11,10 @@
+ #include "mruby/class.h"
+ #include "mruby/numeric.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ int
+ mrb_obj_eq(mrb_state *mrb, mrb_value v1, mrb_value v2)
+ {
+@@ -605,3 +609,7 @@ mrb_eql(mrb_state *mrb, mrb_value obj1, mrb_value obj2)
+   if (mrb_obj_eq(mrb, obj1, obj2)) return TRUE;
+   return mrb_test(mrb_funcall(mrb, obj1, "eql?", 1, obj2));
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/parse.y b/src/parse.y
+index abec59e..8dcde0f 100644
+--- a/src/parse.y
++++ b/src/parse.y
+@@ -30,6 +30,10 @@
+ 
+ #define YYLEX_PARAM p
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ typedef mrb_ast_node node;
+ typedef struct mrb_parser_state parser_state;
+ 
+@@ -5665,3 +5669,7 @@ print(fib(20), \"\\n\")\n\
+   return 0;
+ }
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/pool.c b/src/pool.c
+index 71e4b47..2e1cb38 100644
+--- a/src/pool.c
++++ b/src/pool.c
+@@ -20,6 +20,10 @@
+ #endif
+ /* end of configuration section */
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ struct mrb_pool_page {
+   struct mrb_pool_page *next;
+   size_t offset;
+@@ -188,3 +192,7 @@ main()
+   return 0;
+ }
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/print.c b/src/print.c
+index 3b762e0..210fa84 100644
+--- a/src/print.c
++++ b/src/print.c
+@@ -9,6 +9,10 @@
+ #include "mruby/string.h"
+ #include <stdio.h>
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static void
+ printstr(mrb_state *mrb, mrb_value obj)
+ {
+@@ -83,3 +87,7 @@ mrb_show_copyright(mrb_state *mrb)
+ {
+ }
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/proc.c b/src/proc.c
+index 07834e8..d43d9f3 100644
+--- a/src/proc.c
++++ b/src/proc.c
+@@ -9,6 +9,10 @@
+ #include "mruby/class.h"
+ #include "opcode.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static mrb_code call_iseq[] = {
+   MKOP_A(OP_CALL, 0),
+ };
+@@ -173,3 +177,7 @@ mrb_init_proc(mrb_state *mrb)
+   mrb_define_class_method(mrb, mrb->kernel_module, "lambda", proc_lambda, ARGS_NONE());    /* 15.3.1.2.6  */
+   mrb_define_method(mrb, mrb->kernel_module,       "lambda", proc_lambda, ARGS_NONE());    /* 15.3.1.3.27 */
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/range.c b/src/range.c
+index 6fe7964..5010487 100644
+--- a/src/range.c
++++ b/src/range.c
+@@ -10,6 +10,10 @@
+ #include "mruby/string.h"
+ #include <string.h>
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifndef OTHER
+ #define OTHER 2
+ #endif
+@@ -445,3 +449,7 @@ mrb_init_range(mrb_state *mrb)
+   mrb_define_method(mrb, r, "eql?",            range_eql,             ARGS_REQ(1));      /* 15.2.14.4.14(x) */
+   mrb_define_method(mrb, r, "initialize_copy", range_initialize_copy, ARGS_REQ(1));      /* 15.2.14.4.15(x) */
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/re.c b/src/re.c
+index 091c35f..0a77c75 100644
+--- a/src/re.c
++++ b/src/re.c
+@@ -13,6 +13,11 @@
+ #include "regint.h"
+ #include "mruby/class.h"
+ #include "error.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_REGEXP
+ 
+ #define REGEX_CLASS (mrb_class_obj_get(mrb, "Regexp"))
+@@ -2603,3 +2608,7 @@ mrb_enc_symname_p(const char *name, mrb_encoding *enc)
+     return mrb_enc_symname2_p(name, strlen(name), enc);
+ }
+ #endif //INCLUDE_ENCODING
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/re.h b/src/re.h
+index 65ca0e6..0387fea 100644
+--- a/src/re.h
++++ b/src/re.h
+@@ -15,6 +15,10 @@
+ #include "encoding.h"
+ #include "st.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #define BEG(no) regs->beg[no]
+ #define END(no) regs->end[no]
+ 
+@@ -78,4 +82,10 @@ void mrb_backref_set(mrb_state *mrb, mrb_value val);
+ mrb_value match_alloc(mrb_state *mrb);
+ int mrb_reg_backref_number(mrb_state *mrb, mrb_value match, mrb_value backref);
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
++
+ #endif
++
+diff --git a/src/regcomp.c b/src/regcomp.c
+index b8c6529..da916d6 100644
+--- a/src/regcomp.c
++++ b/src/regcomp.c
+@@ -30,6 +30,11 @@
+ #include "mruby.h"
+ #include <string.h>
+ #include "regparse.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_REGEXP
+ 
+ OnigCaseFoldType OnigDefaultCaseFoldFlag = ONIGENC_CASE_FOLD_MIN;
+@@ -6286,3 +6291,7 @@ print_tree(FILE* f, Node* node)
+ }
+ #endif
+ #endif //ENABLE_REGEXP
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/regenc.c b/src/regenc.c
+index 4cc4967..4d9b38d 100644
+--- a/src/regenc.c
++++ b/src/regenc.c
+@@ -28,6 +28,11 @@
+  */
+ 
+ #include "mruby.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef INCLUDE_ENCODING
+ #include <string.h>
+ #include "regint.h"
+@@ -899,3 +904,7 @@ onigenc_property_list_init(int (*f)(void))
+   return r;
+ }
+ #endif //INCLUDE_ENCODING
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/regenc.h b/src/regenc.h
+index 4e827d1..7b28b9a 100644
+--- a/src/regenc.h
++++ b/src/regenc.h
+@@ -33,6 +33,10 @@
+ #include <stdarg.h>
+ #define RUBY
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifndef mrb_compile_warn
+ #define mrb_compile_warn(a,b,c,d) printf(c,d)
+ #endif
+@@ -200,4 +204,8 @@ extern int ONIG_ENC_REGISTER(const char *, OnigEncodingType*);
+ #define ENC_ALIAS(name, orig)
+ #define ENC_DUMMY(name)
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
+ #endif /* ONIGURUMA_REGENC_H */
+diff --git a/src/regerror.c b/src/regerror.c
+index df60b49..c3ec3ec 100644
+--- a/src/regerror.c
++++ b/src/regerror.c
+@@ -28,6 +28,11 @@
+  */
+ 
+ #include "mruby.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_REGEXP
+ #include <string.h>
+ #include "regint.h"
+@@ -373,3 +378,7 @@ onig_snprintf_with_pattern(UChar buf[], int bufsize, OnigEncoding enc,
+   va_end(args);
+ }
+ #endif //ENABLE_REGEXP
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/regexec.c b/src/regexec.c
+index d265cc8..351efc9 100644
+--- a/src/regexec.c
++++ b/src/regexec.c
+@@ -28,6 +28,11 @@
+  */
+ 
+ #include "mruby.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_REGEXP
+ #include <string.h>
+ #include "regint.h"
+@@ -3755,3 +3760,7 @@ onig_copy_encoding(OnigEncoding to, OnigEncoding from)
+   *to = *from;
+ }
+ #endif //ENABLE_REGEXP
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/regint.h b/src/regint.h
+index aa48715..c80a1d6 100644
+--- a/src/regint.h
++++ b/src/regint.h
+@@ -39,6 +39,10 @@
+ /* for byte-code statistical data. */
+ /* #define ONIG_DEBUG_STATISTICS */
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifndef RUBY
+ #define RUBY
+ #endif
+@@ -835,4 +839,8 @@ typedef int (*ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE)(void);
+ 
+ extern int onigenc_property_list_init(ONIGENC_INIT_PROPERTY_LIST_FUNC_TYPE);
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
+ #endif /* ONIGURUMA_REGINT_H */
+diff --git a/src/regparse.c b/src/regparse.c
+index 0ecb010..dd60bb4 100644
+--- a/src/regparse.c
++++ b/src/regparse.c
+@@ -32,6 +32,11 @@
+ #include <string.h>
+ #include "regparse.h"
+ #include <stdarg.h>
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_REGEXP
+ 
+ #define WARN_BUFSIZE    256
+@@ -5598,3 +5603,7 @@ onig_scan_env_set_error_string(ScanEnv* env, int ecode ARG_UNUSED,
+   env->error_end = arg_end;
+ }
+ #endif //ENABLE_REGEXP
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/regparse.h b/src/regparse.h
+index 1f7855d..0f1ce08 100644
+--- a/src/regparse.h
++++ b/src/regparse.h
+@@ -31,6 +31,10 @@
+ 
+ #include "regint.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ /* node type */
+ #define NT_STR         0
+ #define NT_CCLASS      1
+@@ -351,4 +355,8 @@ extern int onig_print_names(FILE*, regex_t*);
+ #endif
+ #endif
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
++
+ #endif /* ONIGURUMA_REGPARSE_H */
+diff --git a/src/sprintf.c b/src/sprintf.c
+index 630875a..4127dc2 100644
+--- a/src/sprintf.c
++++ b/src/sprintf.c
+@@ -6,6 +6,10 @@
+ 
+ #include "mruby.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_SPRINTF
+ 
+ #include <stdio.h>
+@@ -1090,3 +1094,7 @@ fmt_setup(char *buf, size_t size, int c, int flags, int width, int prec)
+ }
+ 
+ #endif	/* ENABLE_SPRINTF */
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/st.c b/src/st.c
+index 1fd859b..6195c5d 100644
+--- a/src/st.c
++++ b/src/st.c
+@@ -9,6 +9,10 @@
+ #include <string.h>
+ #include "st.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #define ST_DEFAULT_MAX_DENSITY 5
+ #define ST_DEFAULT_INIT_TABLE_SIZE 11
+ 
+@@ -594,3 +598,6 @@ main(int argc, char **argv)
+ }
+ #endif
+ 
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/state.c b/src/state.c
+index db31d70..04f9be4 100644
+--- a/src/state.c
++++ b/src/state.c
+@@ -9,6 +9,10 @@
+ #include "mruby/variable.h"
+ #include <string.h>
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ void mrb_init_heap(mrb_state*);
+ void mrb_init_core(mrb_state*);
+ void mrb_init_ext(mrb_state*);
+@@ -140,3 +144,7 @@ mrb_top_self(mrb_state *mrb)
+   MRB_SET_VALUE(v, MRB_TT_MAIN, value.i, 0);
+   return v;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/string.c b/src/string.c
+index 2ac4359..e7b47bb 100644
+--- a/src/string.c
++++ b/src/string.c
+@@ -20,6 +20,10 @@
+ #include "regex.h"
+ #endif //ENABLE_REGEXP
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ const char mrb_digitmap[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+ 
+ #ifdef ENABLE_REGEXP
+@@ -3079,3 +3083,7 @@ mrb_init_string(mrb_state *mrb)
+   mrb_define_method(mrb, s, "inspect",         mrb_str_inspect,         ARGS_NONE());              /* 15.2.10.5.46(x) */
+   mrb_define_method(mrb, s, "bytes",           mrb_str_bytes,           ARGS_NONE());
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/struct.c b/src/struct.c
+index 85d0fa0..0735c27 100644
+--- a/src/struct.c
++++ b/src/struct.c
+@@ -20,6 +20,9 @@
+ #include "mruby/class.h"
+ #include "mruby/variable.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
+ 
+ static struct RClass *
+ struct_class(mrb_state *mrb)
+@@ -794,3 +797,7 @@ mrb_init_struct(mrb_state *mrb)
+ 
+ }
+ #endif	/* ENABLE_STRUCT */
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/symbol.c b/src/symbol.c
+index 81c28d2..95017e2 100644
+--- a/src/symbol.c
++++ b/src/symbol.c
+@@ -11,6 +11,10 @@
+ #include "mruby/string.h"
+ #include <ctype.h>
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ /* ------------------------------------------------------ */
+ typedef struct symbol_name {
+   int len;
+@@ -406,3 +410,7 @@ mrb_init_symbol(mrb_state *mrb)
+   mrb_define_method(mrb, sym, "<=>",             sym_cmp,                 ARGS_REQ(1));
+   mrb->init_sym = mrb_intern(mrb, "initialize");
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/time.c b/src/time.c
+index 09ebea7..40cd088 100644
+--- a/src/time.c
++++ b/src/time.c
+@@ -6,6 +6,11 @@
+ 
+ 
+ #include "mruby.h"
++
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ #ifdef ENABLE_TIME
+ #include <string.h>
+ #include <stdio.h>
+@@ -750,3 +755,7 @@ mrb_init_time(mrb_state *mrb)
+   */
+ }
+ #endif
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/variable.c b/src/variable.c
+index b3b3b3d..bdcfda0 100644
+--- a/src/variable.c
++++ b/src/variable.c
+@@ -16,6 +16,10 @@
+ #include "re.h"
+ #endif
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ typedef int (iv_foreach_func)(mrb_state*,mrb_sym,mrb_value,void*);
+ 
+ #ifdef MRB_USE_IV_SEGLIST
+@@ -929,3 +933,7 @@ mrb_class_sym(mrb_state *mrb, struct RClass *c, struct RClass *outer)
+   }
+   return mrb_symbol(name);
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif
+diff --git a/src/vm.c b/src/vm.c
+index b5bde89..0a551dc 100644
+--- a/src/vm.c
++++ b/src/vm.c
+@@ -38,6 +38,10 @@
+ #define STACK_INIT_SIZE 128
+ #define CALLINFO_INIT_SIZE 32
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif
++
+ static inline void
+ stack_copy(mrb_value *dst, const mrb_value *src, size_t size)
+ {
+@@ -1864,3 +1868,7 @@ mrb_run(mrb_state *mrb, struct RProc *proc, mrb_value self)
+   }
+   END_DISPATCH;
+ }
++
++#if defined(__cplusplus)
++}  /* extern "C" { */
++#endif

@@ -11,6 +11,10 @@
 #include <mruby.h>
 #include <mruby/compile.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 int main(void)
 {
   mrb_state *mrb = mrb_open();
@@ -19,3 +23,7 @@ int main(void)
   mrb_load_string(mrb, code);
   return 0;
 }
+
+#if defined(__cplusplus)
+}  /* extern "C" { */
+#endif
